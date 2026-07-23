@@ -6,6 +6,7 @@ langchain-community
 langchain-huggingface
 chromadb
 sentence-transformers
-pypdf
 python-dotenv
 pandas
+pypdf
+langchain-text-splitters
