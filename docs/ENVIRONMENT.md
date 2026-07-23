@@ -36,6 +36,7 @@ No other environment variables are required for v1.0 — there's no database con
 | `langchain-groq` | Connects LangChain to the Groq LLM API |
 | `langchain-community`, `langchain-huggingface` | Chroma integration + embeddings wrapper (used from Day 4) |
 | `chromadb` | Vector store engine (used from Day 4) |
+| `langchain-chroma` | Current, non-deprecated LangChain integration for Chroma (used from Day 4) |
 | `sentence-transformers` | Runs the local embedding model (used from Day 4) |
 | `pypdf` | Extracts text from PDF files (used today, Day 3) |
 | `langchain-text-splitters` | Chunks extracted text (used today, Day 3) |
