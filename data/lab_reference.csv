@@ -1,0 +1,7 @@
+test_name,unit,low,high,notes
+Fasting Glucose,mg/dL,70,99,Above 126 may indicate diabetes
+HbA1c,%,4.0,5.6,Above 6.5 may indicate diabetes
+LDL Cholesterol,mg/dL,0,99,Lower is generally better
+HDL Cholesterol,mg/dL,40,60,Higher is generally better
+Triglycerides,mg/dL,0,149,Above 150 is considered elevated
+Systolic Blood Pressure,mmHg,90,120,Above 130 may indicate hypertension

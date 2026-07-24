@@ -1,0 +1,9 @@
+patient_id,test_name,value
+SYN-001,Fasting Glucose,132
+SYN-001,HbA1c,7.1
+SYN-001,LDL Cholesterol,145
+SYN-002,Fasting Glucose,88
+SYN-002,HbA1c,5.2
+SYN-002,LDL Cholesterol,92
+SYN-003,Systolic Blood Pressure,148
+SYN-003,Triglycerides,210
