@@ -1,8 +1,8 @@
 # MedGuide AI — Project Structure
 
-**Status:** Updated Day 3 to reflect actual implementation state. Do not change the overall shape without updating the PRD and Implementation Blueprint first.
+**Status:** Updated Day 5 to reflect actual implementation state. Do not change the overall shape without updating the PRD and Implementation Blueprint first.
 
-## Folder Structure (Current, End of Day 3)
+## Folder Structure (Current, End of Day 5)
 
 ```
 medguide-ai/
@@ -10,7 +10,7 @@ medguide-ai/
 ├── agent/                  # All agent/orchestration logic lives here, isolated from UI code
 │   ├── __init__.py
 │   ├── graph.py             # LangGraph StateGraph — empty, built Day 6
-│   ├── tools.py             # ✅ POPULATED Day 4 — get_retriever() implemented and tested
+│   ├── tools.py             # ✅ Day 4: get_retriever() — ✅ Day 5: validate_labs() added
 │   └── prompts.py           # Prompt text — empty, built Day 6
 ├── ingestion/               # Offline/setup-time scripts — never called at runtime by app.py
 │   ├── __init__.py
@@ -20,8 +20,8 @@ medguide-ai/
 │   │   ├── bmc_diabetes_clinical_practice.pdf
 │   │   ├── cdc_diabetes_referral_strategies.pdf
 │   │   └── frontiers_diabetes_cardiovascular_care.pdf
-│   ├── lab_reference.csv    # Empty, built Day 5
-│   └── synthetic_labs.csv   # Empty, built Day 5
+│   ├── lab_reference.csv    # ✅ POPULATED Day 5 — 6 lab tests with reference ranges
+│   └── synthetic_labs.csv   # ✅ POPULATED Day 5 — 3 synthetic sample patients (SYN- prefixed)
 ├── docs/                    # Design + setup artifacts
 │   ├── ARCHITECTURE.md
 │   ├── SCHEMA.md
@@ -31,10 +31,12 @@ medguide-ai/
 │   ├── SETUP.md              # ✅ NEW Day 3
 │   ├── ENVIRONMENT.md        # ✅ NEW Day 3
 │   ├── DAY3-SUMMARY.md       # ✅ NEW Day 3
+│   ├── DAY4-SUMMARY.md       # ✅ NEW Day 4
+│   ├── DAY5-SUMMARY.md       # ✅ NEW Day 5
 │   └── screenshots/          # populated Day 10
 ├── chroma_store/            # Not yet created — built Day 4, gitignored until Day 9
 ├── tests/                   # Reserved for Day 8 testing work
-├── requirements.txt          # ✅ UPDATED Day 3 — added pypdf, langchain-text-splitters
+├── requirements.txt          # ✅ UPDATED Day 3 (pypdf, langchain-text-splitters) + Day 4 (langchain-huggingface, chromadb, langchain-chroma, sentence-transformers)
 ├── .env                     # Local secrets, gitignored — never committed
 ├── .gitignore
 └── README.md
@@ -53,6 +55,13 @@ medguide-ai/
 - **`agent/tools.py` completed** — `get_retriever(k=4)` implemented and tested with two different queries, both returning correctly-sourced, relevant results
 - **Package swap:** `langchain_community.vectorstores.Chroma` (deprecated) replaced with `langchain_chroma.Chroma` (current) in both files — added `langchain-chroma` to `requirements.txt`
 - The RAG half of the product (PDFs → chunks → embeddings → Chroma → retriever) is now fully functional and verified
+
+## Change Log — Day 5
+
+- **`data/lab_reference.csv` created** — 6 lab tests (Fasting Glucose, HbA1c, LDL/HDL Cholesterol, Triglycerides, Systolic Blood Pressure) with reference ranges, matching the Type 2 Diabetes topic
+- **`data/synthetic_labs.csv` created** — 3 clearly-fake sample patients (`SYN-001` to `SYN-003`) with test values spanning normal and abnormal cases
+- **`agent/tools.py` extended** — `validate_labs()` added alongside `get_retriever()`; tested together in the same run to confirm no regression to Day 4's retriever
+- The second core feature (lab validation) is now fully functional and verified — both PRD features (6.1 Research Q&A, 6.2 Lab Validation) have working backing logic. Only the agent orchestration (Day 6) and UI (Day 7) remain to connect them into the full product.
 
 ## Rationale Per Folder
 
