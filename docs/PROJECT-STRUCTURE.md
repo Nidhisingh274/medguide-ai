@@ -1,17 +1,17 @@
 # MedGuide AI — Project Structure
 
-**Status:** Updated Day 5 to reflect actual implementation state. Do not change the overall shape without updating the PRD and Implementation Blueprint first.
+**Status:** Updated Day 6 to reflect actual implementation state. Do not change the overall shape without updating the PRD and Implementation Blueprint first.
 
-## Folder Structure (Current, End of Day 5)
+## Folder Structure (Current, End of Day 6)
 
 ```
 medguide-ai/
-├── app.py                  # Streamlit entrypoint — Hello World foundation running (full UI: Day 7)
+├── app.py                  # ✅ POPULATED Day 6 — full chat UI, lab form, step tracker, footer
 ├── agent/                  # All agent/orchestration logic lives here, isolated from UI code
 │   ├── __init__.py
-│   ├── graph.py             # LangGraph StateGraph — empty, built Day 6
+│   ├── graph.py             # ✅ POPULATED Day 6 — LangGraph StateGraph, retriever built once (Chroma fix)
 │   ├── tools.py             # ✅ Day 4: get_retriever() — ✅ Day 5: validate_labs() added
-│   └── prompts.py           # Prompt text — empty, built Day 6
+│   └── prompts.py           # ✅ POPULATED Day 6 — ROUTER_PROMPT, SYNTHESIS_PROMPT
 ├── ingestion/               # Offline/setup-time scripts — never called at runtime by app.py
 │   ├── __init__.py
 │   └── build_index.py       # ✅ UPDATED Day 4 — embedding + Chroma storage added
@@ -33,6 +33,7 @@ medguide-ai/
 │   ├── DAY3-SUMMARY.md       # ✅ NEW Day 3
 │   ├── DAY4-SUMMARY.md       # ✅ NEW Day 4
 │   ├── DAY5-SUMMARY.md       # ✅ NEW Day 5
+│   ├── DAY6-SUMMARY.md       # ✅ NEW Day 6
 │   └── screenshots/          # populated Day 10
 ├── chroma_store/            # Not yet created — built Day 4, gitignored until Day 9
 ├── tests/                   # Reserved for Day 8 testing work
@@ -62,6 +63,16 @@ medguide-ai/
 - **`data/synthetic_labs.csv` created** — 3 clearly-fake sample patients (`SYN-001` to `SYN-003`) with test values spanning normal and abnormal cases
 - **`agent/tools.py` extended** — `validate_labs()` added alongside `get_retriever()`; tested together in the same run to confirm no regression to Day 4's retriever
 - The second core feature (lab validation) is now fully functional and verified — both PRD features (6.1 Research Q&A, 6.2 Lab Validation) have working backing logic. Only the agent orchestration (Day 6) and UI (Day 7) remain to connect them into the full product.
+
+## Change Log — Day 6
+
+- **`agent/prompts.py` created** — ROUTER_PROMPT (classifies intent) and SYNTHESIS_PROMPT (writes the final cited answer)
+- **`agent/graph.py` created** — full LangGraph StateGraph wiring together classify_intent → search_guidelines / check_labs → synthesize_answer, with conditional routing
+- **Bug found and fixed:** Chroma throws a `RustBindingsAPI` error if a second connection to the same persisted store is opened in one running process. Fixed by building the retriever once inside `build_graph()` instead of on every question — verified with a 3-question test run in the same process.
+- **`app.py` fully rebuilt** — Hello World replaced with the complete chat UI: question box, optional lab value form, live step tracker, cited answer, lab validation detail, guideline excerpts expander, sidebar, and the required challenge footer
+- **Environment issue found and fixed:** on this machine, the plain `streamlit run` command could launch Anaconda's global Python instead of the project's venv, causing a false `ModuleNotFoundError`. Fixed by always launching via `python -m streamlit run app.py`, which forces the active venv's Python to be used.
+- **Day 6/7/9 blueprint compression:** per explicit approval, today combined the originally-separate Day 6 (agent) and Day 7 (UI) blueprint milestones into one day, since foundation work was ahead of schedule. Deployment (originally Day 9) was NOT pulled forward — still scheduled separately. Day 8's dedicated hardening pass (deeper edge-case testing) also still stands, even though basic error handling (`safe_llm_call`, try/except in the UI) was included today so the live demo doesn't crash.
+- **MVP milestone reached:** all core features (Q&A with citations, lab validation, visible agent reasoning) now work together in one running application, verified end-to-end in the browser.
 
 ## Rationale Per Folder
 
