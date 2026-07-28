@@ -1,8 +1,8 @@
 # MedGuide AI — Project Structure
 
-**Status:** Updated Day 8 to reflect actual implementation state. Do not change the overall shape without updating the PRD and Implementation Blueprint first.
+**Status:** Updated Day 9 to reflect actual implementation state. Do not change the overall shape without updating the PRD and Implementation Blueprint first.
 
-## Folder Structure (Current, End of Day 8)
+## Folder Structure (Current, End of Day 9)
 
 ```
 medguide-ai/
@@ -39,12 +39,14 @@ medguide-ai/
 │   ├── DAY6-SUMMARY.md       # ✅ NEW Day 6
 │   ├── DAY7-SUMMARY.md       # ✅ NEW Day 7
 │   ├── DAY8-SUMMARY.md       # ✅ NEW Day 8
+│   ├── DAY9-SUMMARY.md       # ✅ NEW Day 9
 │   └── screenshots/          # populated Day 10
 ├── chroma_store/            # Not yet created — built Day 4, gitignored until Day 9
 ├── tests/                   # Reserved for Day 8 testing work
 ├── requirements.txt          # ✅ UPDATED Day 3+4 — ✅ Day 8: fully version-pinned for production stability
 ├── .env                     # Local secrets, gitignored — never committed
 ├── .gitignore                # ✅ UPDATED Day 8 — removed stale chroma_store/ line, added installed_versions.txt
+├── LICENSE                   # ✅ NEW Day 9 — MIT License
 └── README.md                 # ✅ REWRITTEN Day 8 — real project README (was GitHub default placeholder); final polish still Day 10
 ```
 
@@ -101,6 +103,17 @@ medguide-ai/
 - **Repo cleanup:** confirmed `test_groq.py` removal (had been unintentionally resurrected by the Day 7 merge; removed again for good)
 - **Full end-to-end walkthrough performed** across 4 scenarios (happy path, blank-value validation, empty question, full visual check) with zero regressions
 - **Redeployed and re-verified live in production** after all fixes combined
+
+## Change Log — Day 9
+
+- **Release Readiness Review conducted** against the full launch checklist (deployment, env vars, README, error states, accessibility, security, license, metadata, favicon, repo organization)
+- **Confirmed already-complete items:** deployment, environment variables, README, error/loading states, accessibility, UI consistency, and security were all already done in Days 7-8 — no rework needed
+- **`LICENSE` added** — MIT License, resolving the "all rights reserved by default" ambiguity of an unlicensed public repo
+- **GitHub repo metadata completed** — added 8 topics (agentic-ai, groq, healthcare-ai, langchain, langgraph, python, rag, streamlit) and linked the live app URL in the repo's "About" section for discoverability
+- **Favicon reviewed** — existing emoji-based page icon (🩺, set Day 6) confirmed sufficient; Streamlit Community Cloud doesn't support custom favicon files without disproportionate extra complexity, so no change made
+- **Considered and deliberately declined:** a per-session question rate limit (to protect the shared Groq API quota from a single visitor asking excessive questions). Discussed honestly with the user, including the real limitation that it's trivially bypassed by refreshing/opening a new tab. Decision: skip it — acceptable risk for a portfolio demo, not worth the added complexity for a limit that isn't robust anyway.
+- **Resolved a false alarm:** a stale cached GitHub fetch on Claude's end incorrectly suggested `test_groq.py` was still in the repo after Day 7's deletion. Verified via `git status` (clean, up to date with origin) and a follow-up screenshot that the repo was correct all along — no actual bug, just a caching artifact during review.
+- **Full end-to-end walkthrough performed on the LIVE production site** (not just localhost) as the final Day 9 verification step — confirmed working correctly
 
 ## Rationale Per Folder
 
