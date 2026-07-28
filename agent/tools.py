@@ -6,6 +6,17 @@ CHROMA_DIR = "chroma_store"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 REFERENCE_PATH = "data/lab_reference.csv"
 
+# Loaded once at import time instead of on every validate_labs() call --
+# this is tiny, static config data that never changes during runtime.
+_REFERENCE_TABLE = None
+
+
+def load_reference_table():
+    global _REFERENCE_TABLE
+    if _REFERENCE_TABLE is None:
+        _REFERENCE_TABLE = pd.read_csv(REFERENCE_PATH)
+    return _REFERENCE_TABLE
+
 
 def get_retriever(k=4):
     """
@@ -15,10 +26,6 @@ def get_retriever(k=4):
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
     vectordb = Chroma(persist_directory=CHROMA_DIR, embedding_function=embeddings)
     return vectordb.as_retriever(search_kwargs={"k": k})
-
-
-def load_reference_table():
-    return pd.read_csv(REFERENCE_PATH)
 
 
 def validate_labs(test_values: dict):
@@ -40,6 +47,17 @@ def validate_labs(test_values: dict):
                 "value": value,
                 "status": "unknown_test",
                 "message": f"No reference range found for '{test_name}'."
+            })
+            continue
+
+        try:
+            value = float(value)
+        except (TypeError, ValueError):
+            results.append({
+                "test_name": test_name,
+                "value": value,
+                "status": "unknown_test",
+                "message": f"'{value}' is not a valid number for {test_name}."
             })
             continue
 

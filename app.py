@@ -1,3 +1,4 @@
+import html
 import streamlit as st
 from agent.graph import build_graph
 
@@ -37,7 +38,7 @@ CUSTOM_CSS = """
     .mg-step-pill {
         display: inline-block;
         background: #E6F7F3;
-        color: #028090;
+        color: #015A64;
         border: 1px solid #02C39A;
         border-radius: 999px;
         padding: 6px 14px;
@@ -63,6 +64,7 @@ CUSTOM_CSS = """
         margin-bottom: 12px;
         font-size: 0.88rem;
         color: #3D4E4C;
+        white-space: pre-wrap;
     }
     .mg-lab-normal, .mg-lab-flag, .mg-lab-unknown {
         border-radius: 8px;
@@ -73,20 +75,9 @@ CUSTOM_CSS = """
     .mg-lab-normal { background: #EAFBF4; border-left: 4px solid #02C39A; color: #0B2E33; }
     .mg-lab-flag { background: #FFF4E5; border-left: 4px solid #E8871E; color: #5C3A0A; }
     .mg-lab-unknown { background: #F2F2F2; border-left: 4px solid #999; color: #444; }
-    .mg-example-chip {
-        display: inline-block;
-        background: white;
-        border: 1px solid #02C39A;
-        color: #028090;
-        border-radius: 999px;
-        padding: 6px 14px;
-        margin: 4px 8px 4px 0;
-        font-size: 0.85rem;
-        cursor: pointer;
-    }
     .mg-footer {
         text-align: center;
-        color: #7A9490;
+        color: #4F6863;
         font-size: 0.8rem;
         padding-top: 18px;
         margin-top: 30px;
@@ -102,7 +93,12 @@ def load_agent():
     return build_graph()
 
 
-app = load_agent()
+try:
+    app = load_agent()
+    agent_load_failed = False
+except Exception as e:
+    agent_load_failed = True
+    agent_load_error = str(e)
 
 # ---------- Hero header ----------
 st.markdown("""
@@ -111,6 +107,14 @@ st.markdown("""
     <p>Agentic clinical research & lab-value validation assistant — demo/portfolio project, not a medical device.</p>
 </div>
 """, unsafe_allow_html=True)
+
+if agent_load_failed:
+    st.error(
+        f"MedGuide AI couldn't start up correctly ({agent_load_error}). "
+        "This is usually a temporary configuration issue on our end — please try refreshing in a minute. "
+        "If it persists, the site owner needs to check the Groq API key or vector store setup."
+    )
+    st.stop()
 
 # ---------- Session state for example-question prefill ----------
 if "question_box" not in st.session_state:
@@ -149,27 +153,39 @@ lab_test_options = [
 ]
 col1, col2 = st.columns(2)
 lab_values = {}
+missing_values = []
 with col1:
     selected_tests = st.multiselect("Select lab tests to check", lab_test_options, label_visibility="collapsed", placeholder="Select lab tests to check")
 with col2:
     for test in selected_tests:
-        val = st.number_input(f"{test} value", key=test, step=0.1)
-        lab_values[test] = val
+        # value=None (not 0.0) so an untouched field is detectable and never
+        # silently treated as a real "0" reading.
+        val = st.number_input(f"{test} value", key=test, step=0.1, value=None, placeholder="Enter value")
+        if val is None:
+            missing_values.append(test)
+        else:
+            lab_values[test] = val
 
 run_clicked = st.button("Ask MedGuide AI", type="primary")
 
 if run_clicked:
     if not question.strip():
         st.warning("Please enter a question first.")
+    elif missing_values:
+        st.warning(f"Please enter a value for: {', '.join(missing_values)} (or remove it from the selected tests).")
     else:
         try:
             with st.spinner("MedGuide AI is working through your question..."):
                 result = app.invoke({"question": question, "lab_values": lab_values})
         except Exception as e:
-            st.error(f"Something went wrong: {e}. Please try again.")
+            error_text = str(e).lower()
+            if "connection" in error_text or "timeout" in error_text or "network" in error_text:
+                st.error("Couldn't reach the AI service — this looks like a network issue. Please check your connection and try again.")
+            else:
+                st.error(f"Something went wrong: {e}. Please try again.")
             st.stop()
 
-        step_pills = "".join([f'<span class="mg-step-pill">{s}</span>' for s in result["steps_log"]])
+        step_pills = "".join([f'<span class="mg-step-pill">{html.escape(s)}</span>' for s in result["steps_log"]])
         st.markdown(f"<div>{step_pills}</div>", unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -187,7 +203,7 @@ if run_clicked:
                     css_class, icon = "mg-lab-unknown", "❓"
                 else:
                     css_class, icon = "mg-lab-flag", "⚠️"
-                st.markdown(f'<div class="{css_class}">{icon} {r["message"]}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="{css_class}">{icon} {html.escape(r["message"])}</div>', unsafe_allow_html=True)
 
         if result.get("retrieved_chunks"):
             with st.expander("📚 Show retrieved guideline excerpts"):
@@ -197,8 +213,8 @@ if run_clicked:
                         source = source.replace("[", "")
                     else:
                         source, text = "source", chunk
-                    st.markdown(f'<span class="mg-source-badge">{source}</span>', unsafe_allow_html=True)
-                    st.markdown(f'<div class="mg-excerpt">{text.strip()}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<span class="mg-source-badge">{html.escape(source)}</span>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="mg-excerpt">{html.escape(text.strip())}</div>', unsafe_allow_html=True)
 
 with st.sidebar:
     st.header("About MedGuide AI")
