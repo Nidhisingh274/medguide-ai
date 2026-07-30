@@ -1,6 +1,12 @@
 # 🩺 MedGuide AI
 
-**An agentic clinical research & lab-value validation assistant** built as a 10-day capstone for the AB Talks 60-Day Claude AI Challenge.
+![Version](https://img.shields.io/badge/version-1.0.0-02C39A)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![Streamlit](https://img.shields.io/badge/built%20with-Streamlit-FF4B4B)
+![LangGraph](https://img.shields.io/badge/orchestration-LangGraph-028090)
+
+**An agentic clinical research & lab-value validation assistant** — built as a 10-day capstone for the AB Talks 60-Day Claude AI Challenge.
 
 🔗 **Live demo:** https://medguide-ai-7nzbirzxqusphhecrkvbns.streamlit.app/
 > Note: free-tier hosting may take a few seconds to "wake up" if the app has been idle.
@@ -12,6 +18,14 @@
 MedGuide AI answers clinical/medical questions using **retrieval-augmented generation (RAG)** over real, public clinical guideline documents — every answer cites its source. It can also **validate lab test values** against reference ranges and flag anomalies in plain English. A visible, step-by-step agent (built with LangGraph) shows exactly how it reasons through each question — not a black box.
 
 This is a **demo/portfolio project, not a medical device.** It uses public guideline PDFs and synthetic (clearly fake) lab data only — never real patient information.
+
+## Screenshots
+
+| Landing & Question Input | Live Agent Reasoning | Lab Validation |
+|---|---|---|
+| ![Landing](docs/screenshots/01-landing.png) | ![Steps](docs/screenshots/02-agent-steps.png) | ![Lab validation](docs/screenshots/03-lab-validation.png) |
+
+*(Screenshots captured from the live production deployment — see `docs/screenshots/` for full-size images.)*
 
 ## Key features
 
@@ -30,6 +44,14 @@ This is a **demo/portfolio project, not a medical device.** It uses public guide
 | Embeddings | Hugging Face `sentence-transformers/all-MiniLM-L6-v2` (local, free) |
 | Vector store | Chroma (embedded) |
 | Hosting | Streamlit Community Cloud (free) |
+
+## Architecture
+
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for full component diagrams, data flow, and the agent's state machine.
+
+```
+User → Streamlit UI → LangGraph Agent → [Chroma Retriever + Lab Validator] → Groq LLM → Cited Answer
+```
 
 ## Running it locally
 
@@ -54,14 +76,22 @@ python -m streamlit run app.py
 
 ## Project structure
 
-See [`docs/PROJECT-STRUCTURE.md`](docs/PROJECT-STRUCTURE.md) for a full folder-by-folder breakdown, and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the system design.
+See [`docs/PROJECT-STRUCTURE.md`](docs/PROJECT-STRUCTURE.md) for a full folder-by-folder breakdown.
+
+## Documentation
+
+Full design docs, PRD, and the story behind this build are in [`docs/`](docs/), including:
+- [`docs/challenge-retrospective.md`](docs/challenge-retrospective.md) — the full Day 1-10 build journey
+- [`docs/future-scope.md`](docs/future-scope.md) — where this project goes next
+- [`docs/30-day-growth-plan.md`](docs/30-day-growth-plan.md) — a roadmap beyond v1.0.0
 
 ## About the builder
 
 Built by Nidhi Singh, an AI/ML engineer with a background in healthcare at ICMR (India's national medical research body) — this project's lab-validation feature is directly inspired by that real-world experience.
 
-## Documentation
+## License
 
-Full design docs, PRD, and implementation blueprint are in [`docs/`](docs/).
+MIT — see [`LICENSE`](LICENSE).
 
 ---
+*Built with Claude as part of the AB Talks 60-Day Claude AI Challenge.*
